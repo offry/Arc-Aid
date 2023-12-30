@@ -7,7 +7,6 @@ from comparison.glyphnet.models.model import *
 from comparison.coinnet.core.model_nets import model_r50_net
 
 
-
 class resnet:
     def __init__(self, arch_type, args, pretrained=False, num_classes=2):
         self.pretrained = pretrained
@@ -69,3 +68,32 @@ def get_model(arch_type, num_classes, args):
         model = models.efficientnet_b3(pretrained=True)
         model.classifier[1] = nn.Linear(in_features=1536, out_features=num_classes)
         return model
+
+
+class Resnet_multi(nn.Module):
+    def __init__(self, model, num_periods):
+        super(Resnet_multi, self).__init__()
+        self.model = model
+        self.embedding_model = torch.nn.Sequential(*(list(model.children())[:-1]))
+        self.fc_shape = nn.Linear(2048, 10)
+        self.fc_periods = nn.Linear(2048, num_periods)
+
+    def forward(self, image):
+        embedding = self.embedding_model(image)
+        embedding = torch.flatten(embedding, 1)
+        pred_shape, pred_period = self.fc_shape(embedding), self.fc_periods(embedding)
+        return pred_shape, pred_period
+
+class Densenet_multi(nn.Module):
+    def __init__(self, model, num_periods):
+        super(Densenet_multi, self).__init__()
+        self.model = model
+        self.embedding_model = torch.nn.Sequential(*(list(model.children())[:-2]))
+        self.classifier_shape = nn.Linear(2208, 10)
+        self.classifier_periods = nn.Linear(2208, num_periods)
+
+    def forward(self, image):
+        embedding = self.embedding_model(image)
+        embedding = torch.flatten(embedding, 1)
+        pred_shape, pred_period = self.classifier_shape(embedding), self.classifier_periods(embedding)
+        return pred_shape, pred_period

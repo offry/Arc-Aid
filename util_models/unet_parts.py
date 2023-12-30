@@ -46,12 +46,12 @@ class DoubleConv(nn.Module):
         self.conv1 = nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(mid_channels)
         self.inst1 = nn.InstanceNorm2d(mid_channels)
-        self.gn1 = nn.GroupNorm(4, mid_channels)
+        # self.gn1 = nn.GroupNorm(4, mid_channels)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(mid_channels, out_channels, kernel_size=3, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.inst2 = nn.InstanceNorm2d(out_channels)
-        self.gn2 = nn.GroupNorm(4, out_channels)
+        # self.gn2 = nn.GroupNorm(4, out_channels)
         self.downsample = None
         if in_channels!=out_channels:
             self.downsample = nn.Sequential(
@@ -103,7 +103,10 @@ class Up(nn.Module):
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
             self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
         else:
-            self.up = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=2, stride=2)
+            if in_channels==out_channels:
+                self.up = nn.Identity()
+            else:
+                self.up = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=2, stride=2)
             self.conv = DoubleConv(in_channels, out_channels)
 
     def forward(self, x1, x2):
