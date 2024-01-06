@@ -38,6 +38,10 @@ We show that while learning how to classify, our model also learns how to genera
    ```
 4. Download the [[Dataset](https://drive.google.com/file/d/1A-fPQ8bB9zkPNrYC0U29RpcSQB8-gARw/view?usp=sharing)], into the project dir.
 
+## Models checkpoints
+
+You are welcome to download and try our [[Models](https://drive.google.com/drive/folders/1QxrnFQjhmJzEuAwyeCoXnEizxyS7Up7z?usp=drive_link)].
+
 ## Citation
 
 If you find our work useful, please consider citing our paper:
